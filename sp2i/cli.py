@@ -6,6 +6,7 @@ import PIL
 import torch
 import torchvision.transforms as T
 import torchvision.transforms.functional as TF
+import torch.nn.functional as F
 
 from dall_e import map_pixels, unmap_pixels, load_model
 
@@ -36,16 +37,27 @@ def preprocess(img):
 device = torch.device("cpu")
 
 # For faster load times, download these files locally and use the local paths instead.
-enc = load_model("../encoder.pkl", device)
-dec = load_model("../decoder.pkl", device)
+enc = load_model("models/encoder.pkl", device)
+dec = load_model("models/decoder.pkl", device)
 
 
 def main():
-    x = preprocess(
-        download_image(
-            "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iKIWgaiJUtss/v2/1000x-1.jpg"
-        )
-    )
-    orig_image = T.ToPILImage(mode="RGB")(x[0])
-    orig_image.save("test.jpg")
+    # x = preprocess(
+    #     download_image(
+    #         "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iKIWgaiJUtss/v2/1000x-1.jpg"
+    #     )
+    # )
+    # orig_image = T.ToPILImage(mode="RGB")(x[0])
+    # orig_image.save("test.jpg")
+
+    # z_logits = enc(x)
+    # z = torch.argmax(z_logits, axis=1)
+    # z = F.one_hot(z, num_classes=enc.vocab_size).permute(0, 3, 1, 2).float()
+
+    x_stats = dec(z).float()
+    x_rec = unmap_pixels(torch.sigmoid(x_stats[:, :3]))
+    x_rec = T.ToPILImage(mode="RGB")(x_rec[0])
+
+    # display_markdown('Reconstructed image:')
+    # display(x_rec)
 

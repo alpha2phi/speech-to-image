@@ -1,9 +1,11 @@
 import unittest
 
+from sp2i.cli import main
 
-class TestDalle(unittest.TestCase):
 
-    """Dall-e tests."""
+class TestClass(unittest.TestCase):
+
+    """Test case docstring."""
 
     def setUp(self):
         pass
@@ -11,5 +13,5 @@ class TestDalle(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_dalle(self):
-        pass
+    def test_cli(self):
+        main()
