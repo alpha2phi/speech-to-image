@@ -38,3 +38,14 @@ device = torch.device("cpu")
 # For faster load times, download these files locally and use the local paths instead.
 enc = load_model("../encoder.pkl", device)
 dec = load_model("../decoder.pkl", device)
+
+
+def main():
+    x = preprocess(
+        download_image(
+            "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iKIWgaiJUtss/v2/1000x-1.jpg"
+        )
+    )
+    orig_image = T.ToPILImage(mode="RGB")(x[0])
+    orig_image.save("test.jpg")
+
