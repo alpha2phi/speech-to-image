@@ -1,2 +1,10 @@
+Pillow
+blobfile
+fire
+mypy
+numpy
+pytest
+requests
 rich
-
+torch
+torchvision
