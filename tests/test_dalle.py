@@ -15,5 +15,5 @@ class TestClass(unittest.TestCase):
         pass
 
     def test_cli(self):
-        text = torch.randint(0, 10000, (4, 256))
+        text = [["blue bear"]]
         generate_images(text)
