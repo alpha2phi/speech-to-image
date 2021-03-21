@@ -77,7 +77,7 @@ def generate_images(captions):
 
     generated_image_codes = []
     with torch.no_grad():
-        for i in trange(0, len(captions), 128):
+        for i in range(0, len(captions), 128):
             generated = generate_image_code(
                 dalle,
                 captions_array[i : i + 128, ...],
