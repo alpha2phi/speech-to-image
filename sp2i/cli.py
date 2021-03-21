@@ -2,6 +2,12 @@ import logging
 import torch
 from dalle_pytorch import OpenAIDiscreteVAE, DALLE
 
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-8s %(message)s",
+    level=logging.INFO,
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
 vae = OpenAIDiscreteVAE()  # loads pretrained OpenAI VAE
 
 dalle = DALLE(
@@ -18,13 +24,14 @@ dalle = DALLE(
 
 
 def generate_images(text):
+    logging.info("Generating images...")
     images = dalle.generate_images(text)
     print(type(images))
 
 
-# text = torch.randint(0, 10000, (4, 256))
-# images = torch.randn(4, 3, 256, 256)
-# mask = torch.ones_like(text).bool()
+    # text = torch.randint(0, 10000, (4, 256))
+    # images = torch.randn(4, 3, 256, 256)
+    # mask = torch.ones_like(text).bool()
 
-# loss = dalle(text, images, mask = mask, return_loss = True)
-# loss.backward()
+    # loss = dalle(text, images, mask = mask, return_loss = True)
+    # loss.backward()

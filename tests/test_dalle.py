@@ -1,4 +1,5 @@
 import unittest
+import torch
 
 from sp2i.cli import generate_images
 
@@ -14,4 +15,5 @@ class TestClass(unittest.TestCase):
         pass
 
     def test_cli(self):
-        generate_images("blue bear")
+        text = torch.randint(0, 10000, (4, 256))
+        generate_images(text)
