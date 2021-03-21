@@ -1,6 +1,6 @@
 import unittest
 
-from sp2i.cli import main
+from sp2i.cli import generate_images
 
 
 class TestClass(unittest.TestCase):
@@ -14,4 +14,4 @@ class TestClass(unittest.TestCase):
         pass
 
     def test_cli(self):
-        main()
+        generate_images("blue bear")

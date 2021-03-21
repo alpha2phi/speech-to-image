@@ -1,63 +1,30 @@
-import io
-import os, sys
-import requests
-import PIL
-
+import logging
 import torch
-import torchvision.transforms as T
-import torchvision.transforms.functional as TF
-import torch.nn.functional as F
+from dalle_pytorch import OpenAIDiscreteVAE, DALLE
 
-from dall_e import map_pixels, unmap_pixels, load_model
+vae = OpenAIDiscreteVAE()  # loads pretrained OpenAI VAE
 
-target_image_size = 256
-
-
-def download_image(url):
-    resp = requests.get(url)
-    resp.raise_for_status()
-    return PIL.Image.open(io.BytesIO(resp.content))
-
-
-def preprocess(img):
-    s = min(img.size)
-
-    if s < target_image_size:
-        raise ValueError(f"min dim for image {s} < {target_image_size}")
-
-    r = target_image_size / s
-    s = (round(r * img.size[1]), round(r * img.size[0]))
-    img = TF.resize(img, s, interpolation=PIL.Image.LANCZOS)
-    img = TF.center_crop(img, output_size=2 * [target_image_size])
-    img = torch.unsqueeze(T.ToTensor()(img), 0)
-    return map_pixels(img)
+dalle = DALLE(
+    dim=1024,
+    vae=vae,  # automatically infer (1) image sequence length and (2) number of image tokens
+    num_text_tokens=10000,  # vocab size for text
+    text_seq_len=256,  # text sequence length
+    depth=1,  # should aim to be 64
+    heads=16,  # attention heads
+    dim_head=64,  # attention head dimension
+    attn_dropout=0.1,  # attention dropout
+    ff_dropout=0.1,  # feedforward dropout
+)
 
 
-# This can be changed to a GPU, e.g. 'cuda:0'.
-device = torch.device("cpu")
-
-# For faster load times, download these files locally and use the local paths instead.
-enc = load_model("models/encoder.pkl", device)
-dec = load_model("models/decoder.pkl", device)
+def generate_images(text):
+    images = dalle.generate_images(text)
+    print(type(images))
 
 
-def main():
-    # x = preprocess(
-    #     download_image(
-    #         "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iKIWgaiJUtss/v2/1000x-1.jpg"
-    #     )
-    # )
-    # orig_image = T.ToPILImage(mode="RGB")(x[0])
-    # orig_image.save("test.jpg")
+# text = torch.randint(0, 10000, (4, 256))
+# images = torch.randn(4, 3, 256, 256)
+# mask = torch.ones_like(text).bool()
 
-    # z_logits = enc(x)
-    # z = torch.argmax(z_logits, axis=1)
-    # z = F.one_hot(z, num_classes=enc.vocab_size).permute(0, 3, 1, 2).float()
-
-    x_stats = dec(z).float()
-    x_rec = unmap_pixels(torch.sigmoid(x_stats[:, :3]))
-    x_rec = T.ToPILImage(mode="RGB")(x_rec[0])
-
-    # display_markdown('Reconstructed image:')
-    # display(x_rec)
-
+# loss = dalle(text, images, mask = mask, return_loss = True)
+# loss.backward()
